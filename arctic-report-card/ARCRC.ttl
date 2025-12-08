@@ -1110,16 +1110,16 @@ odo:ARCRC_00000084 rdf:type owl:Class ;
                    skos:equivalentClass "http://purl.dataone.org/odo/ECSO_00000013" .
 
 ###  http://purl.dataone.org/odo/ARCRC_00000085
-odo:ARCRC_00000017 rdf:type owl:Class ;
+odo:ARCRC_00000085 rdf:type owl:Class ;
                    rdfs:subClassOf odo:ARCRC_00000513 ;
                    obo:IAO_0000115 "Rusting rivers have degraded water quality and habitat, with increased acidity and toxic trace metal concentrations contributing to a loss of aquatic biodiversity in headwater streams." ;
                    obo:IAO_0000119 "Rusting Rivers as defined in the Arctic Report Card 2025 Essay" ;
                    dc:creator <http://orcid.org/0009-0007-8384-5074> ;
                    dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
-                   rdfs:label "Rusting Rivers Indicator"@en ; .
+                   rdfs:label "Rusting Rivers Indicator"@en .
 
 ###  http://purl.dataone.org/odo/ARCRC_00000086
-odo:ARCRC_00000075 rdf:type owl:Class ;
+odo:ARCRC_00000086 rdf:type owl:Class ;
                    rdfs:subClassOf odo:ARCRC_00000512 ;
                    obo:IAO_0000115 "Atlantification – an influx of anomalous water properties and biota from lower latitudes – now reaches the central Arctic Ocean, with its fingerprint detected in the western Amerasian Basin and advancing toward Alaska." ;
                    obo:IAO_0000119 "Atlantification of the Arctic Ocean indicator as defined in the Arctic Report Card 2025 Essay" ;
@@ -1128,7 +1128,7 @@ odo:ARCRC_00000075 rdf:type owl:Class ;
                    rdfs:label "Atlantification of the Arctic Ocean Indicator"@en .
 
 ###  http://purl.dataone.org/odo/ARCRC_00000087
-odo:ARCRC_00000075 rdf:type owl:Class ;
+odo:ARCRC_00000087 rdf:type owl:Class ;
                    rdfs:subClassOf odo:ARCRC_00000512 ;
                    obo:IAO_0000115 "The Arctic contains 60% of the world's mountain glaciers and ice caps by area, excluding the Greenland and Antarctic ice sheets." ;
                    obo:IAO_0000119 "Glaciers and Ice Caps Indicator as defined in the Arctic Report Card 2025 Essay" ;
@@ -1137,13 +1137,63 @@ odo:ARCRC_00000075 rdf:type owl:Class ;
                    rdfs:label "Glaciers and Ice Caps Indicator"@en .
 
 ###  http://purl.dataone.org/odo/ARCRC_00000088
-odo:ARCRC_00000075 rdf:type owl:Class ;
+odo:ARCRC_00000088 rdf:type owl:Class ;
                    rdfs:subClassOf odo:ARCRC_00000512 ;
                    obo:IAO_0000115 "Warming bottom waters, declining sea ice, and rising chlorophyll levels in the Chukchi and northern Bering Seas are restructuring Arctic marine ecosystems." ;
                    obo:IAO_0000119 "Warming Waters and Borealization Indicator as defined in the Arctic Report Card 2025 Essay" ;
                    dc:creator <http://orcid.org/0009-0007-8384-5074> ;
                    dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
-                   rdfs:label "Warming Waters and Borealization Indicator"@en .               
+                   rdfs:label "Warming Waters and Borealization Indicator"@en .       
+
+###  http://purl.dataone.org/odo/ARCRC_00000089
+odo:ARCRC_00000089 rdf:type owl:Class ;
+                   rdfs:subClassOf odo:ARCRC_00000040 ;
+                   obo:IAO_0000115 "a measure of the suitability of water for a particular use based on selected physical, chemical, and biological characteristics." ;
+                   obo:IAO_0000119 "water quality as defined at https://www.usgs.gov/water-science-school/science/water-quality-information-topic" ;
+                   dc:creator <http://orcid.org/0009-0007-8384-5074> ;
+                   dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
+                   dc:description "This Key Variable is used to inform Frostbite, 'Rusting Rivers'" ;
+                   rdfs:label "water quality"@en .        
+
+###  http://purl.dataone.org/odo/ARCRC_00000090
+odo:ARCRC_00000090 rdf:type owl:Class ;
+                   rdfs:subClassOf odo:ARCRC_00000040 ;
+                   obo:IAO_0000115 "The amount of water stored is a state variable of the global hydrologic cycle and affects water availability and its changes over time." ;
+                   obo:IAO_0000119 "total stored water as defined at https://www.globalwaterstorage.info/en/anwendungen/terrestrial-water-storage" ;
+                   dc:creator <http://orcid.org/0009-0007-8384-5074> ;
+                   dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
+                   dc:description "This Key Variable is used to inform Other Indicator, 'Glaciers and Ice Caps'" ;
+                   rdfs:label "total stored water"@en .  
+
+###  http://purl.dataone.org/odo/ARCRC_00000091
+odo:ARCRC_00000091 rdf:type owl:Class ;
+                   rdfs:subClassOf odo:ARCRC_00000040 ;
+                   obo:IAO_0000115 "A type of measurement which measures an electrolyte solution's ability to conduct electricity." ;
+                   dc:creator <http://orcid.org/0009-0007-8384-5074> ;
+                   dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
+                   dc:description "This Key Variable is used to inform Other Indicator, 'Atlantification of the Arctic Ocean'" ;
+                   rdfs:label "conductivity"@en ;
+                   skos:equivalentClass "http://purl.dataone.org/odo/ECSO_00001534" .
+
+###  http://purl.dataone.org/odo/ARCRC_00000092
+odo:ARCRC_00000092 rdf:type owl:Class ;
+                   rdfs:subClassOf odo:ARCRC_00000040 ;
+                   obo:IAO_0000115 "Objective comparative measure of hot or cold of water." ;
+                   dc:creator <http://orcid.org/0009-0007-8384-5074> ;
+                   dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
+                   dc:description "This Key Variable is used to inform Other Indicator, 'Atlantification of the Arctic Ocean' and 'Warming Waters and Borealization'" ;
+                   rdfs:label "water temperature"@en ;
+                   skos:equivalentClass "http://purl.dataone.org/odo/ECSO_00001227" .
+
+###  http://purl.dataone.org/odo/ARCRC_00000093
+odo:ARCRC_00000093 rdf:type owl:Class ;
+                   rdfs:subClassOf odo:ARCRC_00000040 ;
+                   obo:IAO_0000115 "Depth of water, which is a transparent fluid which forms the world's streams, lakes, oceans and rain, and is the major constituent of the fluids of organisms." ;
+                   dc:creator <http://orcid.org/0009-0007-8384-5074> ;
+                   dc:date "2025-12-08T19:43:23Z"^^xsd:dateTime ;
+                   dc:description "This Key Variable is used to inform Other Indicator, 'Atlantification of the Arctic Ocean'" ;
+                   rdfs:label "water depth"@en ;
+                   skos:equivalentClass "http://purl.dataone.org/odo/ECSO_00001203" .
 
 ###  http://purl.dataone.org/odo/ARCRC_00000500
 odo:ARCRC_00000500 rdf:type owl:Class ;
