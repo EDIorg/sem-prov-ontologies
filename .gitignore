@@ -4,3 +4,4 @@
 .DS_Store
 **/catalog-*.xml
 .github/website/_build
+.idea/

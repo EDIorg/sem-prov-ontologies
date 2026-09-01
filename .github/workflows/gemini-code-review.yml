@@ -1,0 +1,262 @@
+name: AI Code Review
+
+on:
+  # pull_request:
+  #   types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to review"
+        required: true
+        type: number
+
+concurrency:
+  group: ai-review-${{ github.event.issue.number || github.event.pull_request.number || github.event.inputs.pr_number }}
+  cancel-in-progress: true
+
+env:
+  AGENT_NAME: edi-ontology-agent
+  MODEL: gemini-3.7-flash
+  TOOLS_DIR: ${{ github.workspace }}/tools
+
+jobs:
+  check-mention:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    outputs:
+      result: ${{ steps.check.outputs.result }}
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Check for qualifying review request
+        id: check
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.generate-token.outputs.token }}
+          script: |
+            const fs = require("fs");
+
+            let allowedUsers = [];
+            try {
+              const configContent = fs.readFileSync(".github/ai-controllers.json", "utf8");
+              allowedUsers = JSON.parse(configContent);
+            } catch (error) {
+              console.log("Error loading allowed users:", error);
+              allowedUsers = ["cmungall"];
+            }
+
+            const agentName = process.env.AGENT_NAME || "edi-ontology-agent";
+
+            if (context.eventName === "workflow_dispatch") {
+              const inputs = context.payload.inputs;
+              const prNumber = parseInt(inputs.pr_number, 10);
+
+              return {
+                qualifiedMention: true,
+                prNumber,
+                user: context.actor,
+              };
+            }
+
+            let content = "";
+            let userLogin = "";
+            let isPr = false;
+            let prNumber = 0;
+            let commentId = null;
+            let reactionTarget = "";
+
+            if (context.eventName === "issue_comment") {
+              content = context.payload.comment.body || "";
+              userLogin = context.payload.comment.user.login;
+              isPr = !!context.payload.issue.pull_request;
+              prNumber = context.payload.issue.number;
+              commentId = context.payload.comment.id;
+              reactionTarget = "issue_comment";
+            } else if (context.eventName === "pull_request_review_comment") {
+              content = context.payload.comment.body || "";
+              userLogin = context.payload.comment.user.login;
+              isPr = true;
+              prNumber = context.payload.pull_request.number;
+              commentId = context.payload.comment.id;
+              reactionTarget = "pull_request_review_comment";
+            }
+
+            const isAllowed = allowedUsers.includes(userLogin);
+            const mentionRegex = new RegExp(`@${agentName}(\\[bot\\])?\\s+please\\s+review`, "i");
+            const hasQualifiedMention = isAllowed && isPr && mentionRegex.test(content);
+
+            console.log(
+              `User: ${userLogin}, Allowed: ${isAllowed}, Is PR: ${isPr}, Has mention: ${mentionRegex.test(content)}`
+            );
+
+            if (!hasQualifiedMention) {
+              return { qualifiedMention: false };
+            }
+
+            try {
+              if (reactionTarget === "issue_comment") {
+                await github.rest.reactions.createForIssueComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: commentId,
+                  content: "eyes",
+                });
+              } else if (reactionTarget === "pull_request_review_comment") {
+                await github.rest.reactions.createForPullRequestReviewComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: commentId,
+                  content: "eyes",
+                });
+              }
+            } catch (error) {
+              console.log("Could not add reaction:", error.message);
+            }
+
+            try {
+              const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+              const commentBody = `🤖 Starting code review...\n\nFollow along: [View workflow run](${runUrl})\n\n*— @${agentName}*`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody,
+              });
+            } catch (error) {
+              console.log("Could not post comment:", error.message);
+            }
+
+            return {
+              qualifiedMention: true,
+              prNumber,
+              user: userLogin,
+            };
+
+  ai-review:
+    needs: check-mention
+    if: fromJSON(needs.check-mention.outputs.result).qualifiedMention == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    env:
+      PR_NUMBER: ${{ fromJSON(needs.check-mention.outputs.result).prNumber }}
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Checkout PR branch
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: gh pr checkout "${{ env.PR_NUMBER }}"
+
+      - name: Set up Agent Environment
+        uses: ./.github/actions/setup-agent-env
+        with:
+          github-token: ${{ steps.generate-token.outputs.token }}
+          compile-db: 'true'
+
+      - name: Run Gemini Code Review
+        id: review
+        uses: google-github-actions/run-gemini-cli@v0.1.22
+        env:
+          GEMINI_CLI_TRUST_WORKSPACE: "true"
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          gemini_model: ${{ env.MODEL }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ env.PR_NUMBER }}
+
+            Review this pull request for the ENVO ontology repository.
+
+            Follow the repository instructions in `AGENTS.md`.
+
+            When you need to inspect or query ontology content (such as verifying parent terms, checking for duplicates, or validating class hierarchies), ALWAYS use the OAK CLI (`runoak`) against the compiled local SQLite database:
+            - To look up a term: `runoak -i sqlite:src/envo/envo.db info ENVO:NNNNNNNN`
+            - To search for labels or synonyms: `runoak -i sqlite:src/envo/envo.db search 'marine environment'`
+            - To query term ancestors: `runoak -i sqlite:src/envo/envo.db ancestors ENVO:NNNNNNNN`
+
+            Do not run standard grep or raw text searches over OWL XML files as they are slow and highly inaccurate.
+
+            Focus on:
+            - Hierarchy and proposed parents being environmentally and logically consistent
+            - Definitions, xrefs, and PMIDs being real and adequately supportive
+            - Obsolete-term handling and replacement or consider tags being safe
+            - OBO and ODK conventions being preserved
+            - Workflow, auth, and repo-configuration regressions when the PR touches `.github` or `.gemini`
+
+            Remember: ENVO term IDs use exactly 8 digits (e.g., `ENVO:01000000`).
+
+            Be constructive and specific. For each issue found, indicate severity:
+            - 🔴 CRITICAL: Must fix before merge
+            - 🟡 IMPORTANT: Should fix before merge
+            - 🔵 SUGGESTION: Optional improvement
+
+            Prefer inline comments for concrete file-level issues. Use the overall review summary to explain the main risks and the merge recommendation.
+
+            After reviewing, set the GitHub PR review status:
+
+            If there are any 🔴 CRITICAL or 🟡 IMPORTANT issues, submit a REQUEST_CHANGES review:
+            ```
+            gh pr review ${{ env.PR_NUMBER }} --request-changes --body "<your review summary>"
+            ```
+
+            If there are only 🔵 SUGGESTIONs or no issues, submit an APPROVE review:
+            ```
+            gh pr review ${{ env.PR_NUMBER }} --approve --body "<your review summary>"
+            ```
+
+            Always include a checklist at the top of your review:
+            - [ ] Hierarchy and parents are consistent
+            - [ ] Definitions and supporting references look adequate
+            - [ ] Obsolete or replacement handling is safe
+            - [ ] OBO and ODK conventions appear preserved
+            - [ ] No obvious CI, auth, or workflow regression
+
+            SIGNATURE:
+            Always include the following signature block in your GitHub review comment:
+            ```
+            ---
+            🤖 **Generated by @${{ env.AGENT_NAME }} (Code Review)**
+            - Model: `${{ env.MODEL }}`
+            - Agent harness: run-gemini-cli
+            - Triggered by: @${{ fromJSON(needs.check-mention.outputs.result).user }}
+            - Run: [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            ```
+
+      - name: Restore actions directory for cleanup
+        if: always()
+        run: |
+          git checkout ${{ github.sha }} -- .github/actions/ || true
