@@ -218,7 +218,79 @@ All curation activities follow a structured Git feature branch model targeting t
 
 ---
 
-## 7. Term Hierarchy & Axiomatic Best Practices
+## 7. Commit Message Guidelines & Standards
+
+To maintain clean, searchable, and professional version history across human and AI agent curation, all commits must adhere to standard formatting and structural conventions:
+
+### Formatting Rules
+
+1. **Subject Line**:
+   - Write in the **imperative mood** (e.g., "Add...", "Fix...", "Update...", "Deprecate...", "Refactor..."). Avoid past tense ("Added") or present participle ("Adding").
+   - Capitalize the first letter and do not place a trailing period.
+   - Keep the subject line concise: **50–72 characters maximum**.
+   - Reference the associated issue number (e.g., `(#92)` or `#92`).
+
+2. **Message Body**:
+   - Separate the subject from the body with **exactly one blank line**.
+   - Explain the **what** and **why** of the change, including semantic rationale, parent class placement decisions, and external reference mappings.
+   - **Wrap all body lines strictly at 72 characters** to ensure readability in terminal pagers and git logs.
+   - Use modular bullet points for multi-term or multi-axiom updates.
+
+3. **Agent Attribution / Signing**:
+   - Curations performed by automated agents should sign off or attribute commits as `@edi-ontology-agent` (or designated agent signature).
+
+### Commit Message Template & Examples
+
+#### Standard Format
+```text
+<Imperative action summary> (#<issue-number>)
+
+<Detailed explanation of semantic and ontological changes, rationale,
+and background context. Wrapped strictly at 72 characters per line.>
+
+- <Bullet point 1 detailing specific terms or axioms added/modified>
+- <Bullet point 2 detailing validation, sources, or xrefs>
+```
+
+#### Example 1: New Term Addition via ROBOT Template
+```text
+Add soil microbial respiration terms (#92)
+
+Add 'soil microbial respiration rate' (ECSO:00010137) and associated
+respiration characteristics via ROBOT template merge:
+- Define genus-differentia under soil respiration rate (ECSO:00000010).
+- Link definition source to Wikipedia soil respiration reference.
+- Add exact and narrow synonyms for heterotrophic respiration.
+- Validate OWL 2 DL profile and verify HermiT reasoner consistency.
+```
+
+#### Example 2: Term Annotation or Synonym Update
+```text
+Add exact synonyms to dissolved organic carbon (#104)
+
+Add exact synonyms 'DOC' and 'dissolved OC' to ECSO:00001205 to improve
+search discoverability across ecological observation datasets.
+```
+
+#### Example 3: Deprecating Redundant Term
+```text
+Deprecate redundant leaf area index term (#115)
+
+Mark ECSO:00000512 as deprecated (owl:deprecated true) in favor of
+canonical ECSO:00002140 with IAO:term_replaced_by.
+```
+
+#### Example 4: Syntax or Validation Fix
+```text
+Fix owl:sameAs literal URI syntax in ECSO8.owl (#120)
+
+Convert string literal to proper URI resource on ECSO:00001523 to
+satisfy OWL 2 DL profile validation.
+```
+
+---
+
+## 8. Term Hierarchy & Axiomatic Best Practices
 
 ### Core Measurement & Characteristic Organization
 ECSO organizes environmental and ecosystem measurements around:
@@ -233,7 +305,7 @@ ECSO organizes environmental and ecosystem measurements around:
 
 ---
 
-## 8. Quality Assurance Checklist for Curators & Agents
+## 9. Quality Assurance Checklist for Curators & Agents
 
 ### Pre-Commit Checklist
 - [ ] Next ID dynamically minted without collisions (8-digit standard `ECSO:XXXXXXXX`).
@@ -245,11 +317,13 @@ ECSO organizes environmental and ecosystem measurements around:
 - [ ] Issue tracker referenced via `IAO:0000233`.
 - [ ] Synonyms correctly categorized (`hasExactSynonym`, `hasBroadSynonym`, etc.).
 - [ ] No `owl:sameAs` pointing to raw string literals (URIs only).
+- [ ] Commit message follows formatting standards (imperative mood, wrapped at 72 chars, explaining what and why).
 
 ### Pre-PR Checklist
 - [ ] ROBOT template compiled and cleanly merged into `ecso/ECSO8.owl`.
 - [ ] `robot reason` executed with zero unsatisfiable classes.
 - [ ] Base branch is `develop` on `clnsmth/sem-prov-ontologies`.
 - [ ] Associated GitHub issue referenced in commit and PR description.
+
 
 
