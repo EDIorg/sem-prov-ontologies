@@ -64,7 +64,33 @@ All terms in ECSO must include:
 
 ---
 
-## 3. Querying & Semantic Search (OAK / SemSQL)
+## 3. Concept Definition Principles (OBO Genus-Differentia Pattern)
+
+ECSO strictly follows the **OBO Foundry Aristotelian Genus-Differentia** pattern for all textual definitions (`IAO:0000115`):
+
+### Definition Rules
+- **Template**:
+  - Entities, qualities, and measurements: `A <genus> which <differentia>.`
+  - Processes: `A <genus> during which <differentia>.`
+- **Genus**: Must match the exact primary label of the direct parent class (`rdfs:subClassOf`) in lowercase. Do not modify the genus with leading adjectives (e.g., use `A <parent> which is <adjective>...` instead of `An <adjective> <parent>...`).
+- **Differentia**: Specifies universal, essential distinguishing characteristics. When multiple criteria exist, use modular numbering: `A <genus> which 1) <C1>, 2) <C2>, and 3) <C3>.`
+- **Separation of Concerns**: Keep definitions minimal and universally true. Move non-universal details, sampling protocols, sensor models, and examples to `rdfs:comment`.
+- **Citations**: Every definition must cite a verifiable reference URL or DOI (`IAO:0000119` or `oboInOwl:hasDbXref`).
+
+### Examples
+- ✅ **Good**: `A soil respiration rate which is determined by the metabolic activity of soil microorganisms.` (Parent: `soil respiration rate`)
+- ❌ **Bad**: `An autotrophic soil respiration rate measured using dynamic gas chambers.` (Modified genus, embeds protocol into definition rather than `rdfs:comment`).
+
+### Antipatterns to Avoid
+- **Circularity / Tautology**: Defining a term using its own label without adding distinguishing semantic criteria.
+- **Modified Genus**: Injecting adjectives into the genus subject position rather than the differentia clause.
+- **Negative Definitions**: Stating what something is *not* rather than what it *is*.
+- **Protocol Overreach**: Placing measurement techniques, sensor models, or sampling intervals in definitions instead of comments.
+- **Parent Mismatch**: Stating a genus that does not match the asserted superclass in the hierarchy.
+
+---
+
+## 4. Querying & Semantic Search (OAK / SemSQL)
 
 To search for existing concepts, check for duplicates, and inspect term hierarchies without error-prone raw text grepping, use the **Ontology Access Kit (`runoak`)**:
 
@@ -93,7 +119,7 @@ Before creating any term:
 
 ---
 
-## 4. Curation & Editing Workflow (ROBOT Templates)
+## 5. Curation & Editing Workflow (ROBOT Templates)
 
 ECSO adopts the automated **ROBOT CSV Template** workflow for all term additions, updates, and relationship curation. Direct manual editing in Protégé is avoided in favor of deterministic, scriptable, and version-controlled ROBOT pipelines.
 
@@ -147,7 +173,7 @@ ROBOT template CSV files are authored in `ecso/modules/` (e.g., `ecso/modules/ne
 
 ---
 
-## 5. Automated Testing & Validation Pipeline
+## 6. Automated Testing & Validation Pipeline
 
 All changes must pass automated syntactic and semantic validations before committing.
 
@@ -173,7 +199,7 @@ All changes must pass automated syntactic and semantic validations before commit
 
 ---
 
-## 6. Git Workflow & Branching Strategy
+## 7. Git Workflow & Branching Strategy
 
 All curation activities follow a structured Git feature branch model targeting the **`develop`** branch of `clnsmth/sem-prov-ontologies`.
 
@@ -218,7 +244,7 @@ All curation activities follow a structured Git feature branch model targeting t
 
 ---
 
-## 7. Commit Message Guidelines & Standards
+## 8. Commit Message Guidelines & Standards
 
 To maintain clean, searchable, and professional version history across human and AI agent curation, all commits must adhere to standard formatting and structural conventions:
 
@@ -290,7 +316,7 @@ satisfy OWL 2 DL profile validation.
 
 ---
 
-## 8. Term Hierarchy & Axiomatic Best Practices
+## 9. Term Hierarchy & Axiomatic Best Practices
 
 ### Core Measurement & Characteristic Organization
 ECSO organizes environmental and ecosystem measurements around:
@@ -305,7 +331,7 @@ ECSO organizes environmental and ecosystem measurements around:
 
 ---
 
-## 9. Quality Assurance Checklist for Curators & Agents
+## 10. Quality Assurance Checklist for Curators & Agents
 
 ### Pre-Commit Checklist
 - [ ] Next ID dynamically minted without collisions (8-digit standard `ECSO:XXXXXXXX`).
