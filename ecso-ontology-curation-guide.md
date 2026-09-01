@@ -1,6 +1,6 @@
-# ECSO Ontology Curation Guide
+# ECSO Ontology Contributing Guide
 
-A comprehensive guide for curators and automated AI agents to edit, query, validate, and contribute to the Ecosystem Ontology (ECSO).
+A comprehensive guide for contributors and automated AI curation agents to query, propose, edit, validate, and submit contributions to the Ecosystem Ontology (ECSO).
 
 ---
 
@@ -211,47 +211,50 @@ All changes must pass automated syntactic and semantic validations before commit
 
 ---
 
-## 7. Git Workflow & Branching Strategy
+## 7. Issue, Git & Pull Request Workflow (Contributor Lifecycle)
 
-All curation activities follow a structured Git feature branch model targeting the **`develop`** branch of `clnsmth/sem-prov-ontologies`.
+All contributor activities follow a structured Git feature branch model targeting the **`develop`** branch of our fork repository (`clnsmth/sem-prov-ontologies`).
 
-### Branching Model
+### Contributor Lifecycle Overview
 
-| Branch | Purpose | PR / Merge Target |
-| :--- | :--- | :--- |
-| **`develop`** | Active development & feature integration | Base branch for all feature PRs |
-| **`main`** | Stable release versions | Merged from `develop` upon release |
-| **`feature-{ISSUE_NUMBER}-{description}`** | Issue-specific curation branch | Base: `develop` → Target PR: `develop` |
+1. **Staging & Upstream Context**: Contributors propose new terms, missing definitions, synonyms, or structural corrections by submitting Pull Requests to `develop` on `clnsmth/sem-prov-ontologies`. Maintainers review, validate, and merge approved contributions into `develop`, which are then periodically proposed to the upstream parent DataONE ontology.
+2. **Pull Request Isolation**: Contributors never push directly to shared branches (`develop` or `main`) and do not merge their own pull requests. All modifications are reviewed through PRs.
 
-### Step-by-Step Git Process
+### Step-by-Step Contributor Process
 
-1. **Sync develop Branch**:
+1. **Open or Identify an Issue**:
+   - Open or reference an issue on `clnsmth/sem-prov-ontologies` outlining the proposed term or annotation additions.
+   - Record the issue URL to populate the `term tracker item` (`IAO:0000233`) annotation.
+
+2. **Sync and Branch from `develop`**:
    ```bash
    git checkout develop
    git pull origin develop
-   ```
-
-2. **Create Feature Branch**:
-   ```bash
    git checkout -b feature-92-soil-microbial-respiration develop
    ```
 
-3. **Author Template & Apply ROBOT Pipeline**:
-   - Write CSV template in `ecso/modules/`.
-   - Run `robot template` and `robot merge`.
-   - Run `robot reason` to validate consistency.
+3. **Author Template & Apply Local ROBOT Pipeline**:
+   - Author the CSV template in `ecso/modules/` (e.g., `ecso/modules/new_terms_template.csv`).
+   - Run `robot template` to build the temporary module.
+   - Run `robot merge` to merge into local `ecso/ECSO8.owl`.
+   - Run `robot reason` and `robot validate-profile` to verify consistency locally.
 
-4. **Commit & Push**:
+4. **Commit & Push Feature Branch**:
    ```bash
    git add ecso/ECSO8.owl ecso/modules/new_terms_template.csv
    git commit -m "Add soil microbial respiration terms via ROBOT template #92"
    git push origin feature-92-soil-microbial-respiration
    ```
 
-5. **Open Pull Request**:
-   Create PR targeting `develop` on `clnsmth/sem-prov-ontologies` using GitHub CLI:
+5. **Submit Pull Request for Review**:
+   Create a Pull Request targeting `develop` on `clnsmth/sem-prov-ontologies` using GitHub CLI:
    ```bash
-   gh pr create --repo clnsmth/sem-prov-ontologies --base develop --head feature-92-soil-microbial-respiration --title "Add soil microbial respiration terms (#92)" --body "Resolves #92. Created terms via ROBOT template and verified reasoner consistency."
+   gh pr create \
+     --repo clnsmth/sem-prov-ontologies \
+     --base develop \
+     --head feature-92-soil-microbial-respiration \
+     --title "Add soil microbial respiration terms (#92)" \
+     --body "Resolves #92. Created terms via ROBOT template and verified reasoner consistency."
    ```
 
 ---
