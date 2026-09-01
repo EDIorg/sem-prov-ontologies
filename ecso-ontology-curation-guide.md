@@ -1,247 +1,255 @@
 # ECSO Ontology Curation Guide
 
-## 1\. IDENTIFIER FORMAT & URI SYNTAX
+A comprehensive guide for curators and automated AI agents to edit, query, validate, and contribute to the Ecosystem Ontology (ECSO).
+
+---
+
+## 1. Identifier Format & URI Syntax
 
 ### ECSO URI Structure
 
 **Standard Format**: `http://purl.dataone.org/odo/ECSO_00000001`
 
 Where:
-
-- **Prefix**: `ECSO_`  
-- **Local ID**: 8-digit zero-padded numeric string
+- **Prefix / Namespace**: `http://purl.dataone.org/odo/ECSO_` (or CURIE `ECSO:00000001`)
+- **Local ID**: 8-digit zero-padded numeric string (e.g., `00001122`, `00010136`)
 
 **Examples**:
+- `http://purl.dataone.org/odo/ECSO_00001122` (`ECSO:00001122` - Freshwater Total Inorganic Carbon)
+- `http://purl.dataone.org/odo/ECSO_00002386` (`ECSO:00002386` - Dissolved Oxygen Saturation)
 
-- `http://purl.dataone.org/odo/ECSO_00001122` (Freshwater Total Inorganic Carbon)  
-- `http://purl.dataone.org/odo/ECSO_00002386` (Dissolved Oxygen Saturation)
+### URI Assignment & Dynamic ID Discovery
 
-### URI Assignment Rules
-
-1. **New Terms**: Use the next available URI by incrementing the decimal portion of the most recently minted term  
-2. **No Reuse**: Never reuse URIs for new terms, even if an old term is deprecated  
-3. **Resolution**: URIs resolve through the DataONE persistent URL service  
-4. **Avoid Non-Standard Formats**: Terms with URIs like `ECSO_#Leaf_Area_Index` are legacy errors—use standard 8-digit format only
+1. **New Terms**: Dynamically discover the next available ID by identifying the highest existing numeric ID allocated for classes in `ecso/ECSO8.owl` and incrementing by 1 (e.g., `ECSO:00010137`).
+2. **Helper Tool**: Agents and curators should run the dynamic ID discovery utility (e.g., `python3 scripts/get_next_ecso_id.py` or equivalent inline inspector) to mint sequential, collision-free IDs.
+3. **No ID Reuse**: Never reuse URIs for new terms, even if an old term is deprecated.
+4. **Resolution**: URIs resolve through the DataONE persistent URL service.
+5. **Strict 8-Digit Format**: Avoid non-standard or legacy formats (such as string fragment URIs like `ECSO_#Leaf_Area_Index`). All newly minted terms must use standard 8-digit numeric formatting.
 
 ---
 
-## 2\. TERM ANNOTATION STANDARDS
+## 2. Term Annotation Standards
 
 ### Required Annotation Properties
 
 All terms in ECSO must include:
 
-| Property | Namespace | Purpose |
-| :---- | :---- | :---- |
-| `rdfs:label` | [http://www.w3.org/2000/01/rdf-schema\#](http://www.w3.org/2000/01/rdf-schema#) | Preferred term name |
-| `IAO:definition` | [http://purl.obolibrary.org/obo/](http://purl.obolibrary.org/obo/) (IAO\_0000115) | Clear definition of concept |
-| `dc:creator` | [http://purl.org/dc/elements/1.1/](http://purl.org/dc/elements/1.1/) | ORCID of term creator |
-| `dc:date` | [http://purl.org/dc/terms/](http://purl.org/dc/terms/) | ISO 8601 creation date |
+| Property | CURIE / IRI | Purpose & Format |
+| :--- | :--- | :--- |
+| `rdfs:label` | `rdfs:label` | Lowercase primary term label (e.g., `freshwater total inorganic carbon`) |
+| `IAO:definition` | `IAO:0000115` | OBO-compliant genus-differentia definition: `A <parent> which <differentia>` |
+| `dc:creator` | `dc:creator` | Full ORCID URL of term creator (e.g., `https://orcid.org/0000-0002-4366-3088`) |
+| `dc:date` | `dc:date` | ISO 8601 creation timestamp (e.g., `2026-09-01T12:00:00Z`) |
 
 ### Optional Annotation Properties
 
-| Property | Purpose |
-| :---- | :---- |
-| `skos:altLabel` / `obo:hasExactSynonym` | Exact synonyms or alternative names |
-| `obo:hasNarrowSynonym` | Narrower terms with similar meaning |
-| `obo:hasBroadSynonym` | Broader terms with similar meaning |
-| `rdfs:seeAlso` | Related concepts |
-| `owl:sameAs` | Equivalent concepts (must use URIs, NOT literals) |
-| `dc:description` | Extended information beyond definition |
-| `obo:hasDbXref` | Cross-references to external systems |
-| `IAO:definition_source` | Source documentation for definition |
+| Property | CURIE / IRI | Purpose |
+| :--- | :--- | :--- |
+| `oboInOwl:hasExactSynonym` | `oboInOwl:hasExactSynonym` | Exact synonyms or interchangeable alternative labels |
+| `oboInOwl:hasNarrowSynonym` | `oboInOwl:hasNarrowSynonym` | Narrower terms with specialized meaning |
+| `oboInOwl:hasBroadSynonym` | `oboInOwl:hasBroadSynonym` | Broader terms encompassing the concept |
+| `oboInOwl:hasRelatedSynonym` | `oboInOwl:hasRelatedSynonym` | Linguistically related or associated terms |
+| `rdfs:comment` | `rdfs:comment` | Contextual notes, domain nuances, non-universal attributes |
+| `rdfs:seeAlso` | `rdfs:seeAlso` | Related external concepts or documentation |
+| `oboInOwl:hasDbXref` | `oboInOwl:hasDbXref` | Cross-references to external vocabularies (SWEET, ENVO, CHEBI, etc.) |
+| `IAO:definition_source` | `IAO:0000119` | Direct URL, PMID, DOI, or expert citation for verbatim/adapted definitions |
+| `IAO:term_tracker_item` | `IAO:0000233` | Full GitHub issue URL tracking the curation request |
+| `owl:deprecated` | `owl:deprecated` | Boolean `true` for obsolete concepts |
+| `IAO:term_replaced_by` | `IAO:0000110` | URI of the replacement term when deprecated |
 
-### Critical Error: Literal in owl:sameAs
-
-**❌ WRONG**:
-
-owl:sameAs "http://purl.dataone.org/odo/ECSO\_00001523"
-
-**✅ CORRECT**:
-
-owl:sameAs \<http://purl.dataone.org/odo/ECSO\_00001523\>
+> [!IMPORTANT]
+> **Avoid Literal in `owl:sameAs`**:
+> - ❌ WRONG: `owl:sameAs "http://purl.dataone.org/odo/ECSO_00001523"`
+> - ✅ CORRECT: `owl:sameAs <http://purl.dataone.org/odo/ECSO_00001523>`
 
 ---
 
-## 3\. SYNONYM & ABBREVIATION HANDLING
+## 3. Querying & Semantic Search (OAK / SemSQL)
 
-### Synonym Classification
+To search for existing concepts, check for duplicates, and inspect term hierarchies without error-prone raw text grepping, use the **Ontology Access Kit (`runoak`)**:
 
-1. **Exact Synonyms** (`hasExactSynonym`): Terms that refer to exactly the same concept  
-2. **Broad Synonyms** (`hasBroadSynonym`): Terms that are more general  
-3. **Narrow Synonyms** (`hasNarrowSynonym`): Terms that are more specific
+### Common OAK Query Commands
+- **Term Lookup by ID**:
+  ```bash
+  runoak -i ecso/ECSO8.owl info ECSO:00001122
+  ```
+- **Fuzzy Search & Synonym Matching**:
+  ```bash
+  runoak -i ecso/ECSO8.owl search 'dissolved oxygen'
+  ```
+- **Hierarchical Ancestor Inspection**:
+  ```bash
+  runoak -i ecso/ECSO8.owl ancestors ECSO:00001122
+  ```
+- **Subclass / Descendant Inspection**:
+  ```bash
+  runoak -i ecso/ECSO8.owl descendants ECSO:00000010
+  ```
 
-### Abbreviation Best Practices
-
-- **Be Specific**: Use abbreviations that clarify scope (e.g., "Freshwater POC" not just "POC")  
-- **Document Source**: Record where synonyms originated  
-- **Avoid Over-Generalization**: Don't use abbreviations that could apply to multiple domains  
-- **Classify Carefully**: Use appropriate SKOS/OBO synonym properties
-
----
-
-## 4\. TERM LIFECYCLE: CREATION & MODIFICATION
-
-### Adding New Terms
-
-1. **File an Issue**: Check GitHub issues to avoid duplication  
-2. **Create Feature Branch**: Use naming `feature-{ISSUE_NUMBER}-{description}`  
-   - Example: `feature-92-taxonomic-rank-clarification`  
-3. **Add Term Metadata**: Include all required annotations  
-4. **Link to Sources**: Provide definitions with `IAO:definition_source` when adapted from external ontologies  
-5. **Submit Pull Request**: To `develop` branch with clear description
-
-### Modifying Existing Terms
-
-**For Minor Changes** (label fixes, adding synonyms): Create feature branch, submit PR to `develop`
-
-**For Major Changes** (definition rewrites, structure): File issue first for community feedback before implementing
-
-### Deprecating Terms
-
-When a term is deprecated:
-
-1. **Add Deprecation Mark**: `owl:deprecated true`  
-2. **Indicate Replacement** (if applicable):  
-     
-   IAO:term\_replaced\_by \<http://purl.dataone.org/odo/ECSO\_00001234\>  
-     
-3. **Never Reuse URI**: The old URI remains permanently reserved  
-4. **Document Reasoning**: Add comment explaining deprecation
+### Duplicate Detection Policy
+Before creating any term:
+1. Search `ECSO8.owl` using `runoak search '<proposed label>'` and synonyms.
+2. If the concept already exists as a primary label or exact synonym, **do not recreate or duplicate it**. Report the existing term ID and definition.
 
 ---
 
-## 5\. TERM HIERARCHY & CLASS ORGANIZATION
+## 4. Curation & Editing Workflow (ROBOT Templates)
 
-### High-Level Concept Categories
+ECSO adopts the automated **ROBOT CSV Template** workflow for all term additions, updates, and relationship curation. Direct manual editing in Protégé is avoided in favor of deterministic, scriptable, and version-controlled ROBOT pipelines.
 
-ECSO organizes concepts around:
+### Standard ROBOT CSV Template Structure
 
-- Biomass, Carbon (element & compounds)  
-- Productivity, Growth, Primary Production  
-- Soil & Water properties  
-- Concentration & Flux measurements  
-- Ecosystems & Aquatic systems  
-- Temperature, Salinity, Dissolved constituents
+ROBOT template CSV files are authored in `ecso/modules/` (e.g., `ecso/modules/new_terms_template.csv`).
 
-### Hierarchy Best Practices
+- **Row 1**: Human-readable column headers
+- **Row 2**: ROBOT template instruction strings
 
-1. **Logical Placement**: Place new terms under appropriate parent classes  
-2. **Single Hierarchy**: Prefer single, clear hierarchies; avoid polyhierarchy  
-3. **Use Multiple Inheritance Sparingly**: Only when a term genuinely belongs to multiple categories  
-4. **Defensible Placement**: Be able to explain parent/child relationships in pull requests
+| Column Header (Row 1) | ROBOT Template Definition (Row 2) | Expected Value / Format | Example |
+| :--- | :--- | :--- | :--- |
+| `Ontology ID` | `ID` | CURIE ID | `ECSO:00010137` |
+| `label` | `A rdfs:label` | Lowercase term label | `soil microbial respiration rate` |
+| `parent class` | `SC %` | Parent CURIE or label | `ECSO:00000010` |
+| `definition` | `A IAO:0000115` | OBO Genus-Differentia definition | `A soil respiration rate which measures...` |
+| `definition cross reference` | `AI oboInOwl:hasDbXref SPLIT=\|` | Pipe-separated reference URLs/DOIs | `https://en.wikipedia.org/wiki/Soil_respiration` |
+| `comment` | `A rdfs:comment` | Non-universal context | `Commonly measured using dynamic closed chambers.` |
+| `exact synonym` | `AL oboInOwl:hasExactSynonym@en SPLIT=\|` | Exact synonym labels | `soil microbial respiration` |
+| `broad synonym` | `AL oboInOwl:hasBroadSynonym@en SPLIT=\|` | Broader synonym labels | `soil respiration` |
+| `narrow synonym` | `AL oboInOwl:hasNarrowSynonym@en SPLIT=\|` | Narrower synonym labels | `heterotrophic soil respiration rate` |
+| `related synonym` | `AL oboInOwl:hasRelatedSynonym@en SPLIT=\|` | Loose/related synonyms | `belowground carbon flux` |
+| `cross reference` | `AI oboInOwl:hasDbXref SPLIT=\|` | External vocabulary CURIEs/URIs | `ENVO:01001234\|SWEET:SoilRespiration` |
+| `subclass axiom` | `SC %` | OWL class expressions | `('has part' some 'carbon dioxide')` |
+| `term tracker item` | `A IAO:0000233` | GitHub Issue URL | `https://github.com/clnsmth/sem-prov-ontologies/issues/92` |
+| `creation date` | `A dc:date` | ISO 8601 timestamp | `2026-09-01T12:00:00Z` |
+| `created by` | `A dc:creator SPLIT=\|` | Full creator ORCID URL | `https://orcid.org/0000-0002-4366-3088` |
 
----
+### Template Compilation & Merging Pipeline
 
-## 6\. DEVELOPMENT WORKFLOW & BRANCHING STRATEGY
+1. **Convert Template CSV to Temporary OWL Module**:
+   ```bash
+   robot template \
+     --template ecso/modules/new_terms_template.csv \
+     -i ecso/ECSO8.owl \
+     --prefix "ECSO:http://purl.dataone.org/odo/ECSO_" \
+     --prefix "RO:http://purl.obolibrary.org/obo/RO_" \
+     --prefix "IAO:http://purl.obolibrary.org/obo/IAO_" \
+     --ontology-iri "http://purl.dataone.org/odo/ecso/modules/temp.owl" \
+     convert --format ofn -o ecso/modules/temp.owl
+   ```
 
-### Branch Structure
-
-| Branch | Purpose | Merge Requirements |
-| :---- | :---- | :---- |
-| **main** | Stable, released versions | 2 approvals required; via PR from `develop` |
-| **develop** | Integration branch for features | Ready-to-deploy code only |
-| **feature/**\* | Individual feature development | Frequent merges with `develop` |
-
-### Feature Branch Naming
-
-feature-{ISSUE\_NUMBER}-{description}
-
-Examples: `feature-92-taxonomic-rank-definitions`, `feature-91-environmental-measurement-types`
-
-### Contributor Workflow
-
-1. **Fork** and **Clone** repository  
-2. **Checkout develop**: `git checkout develop`  
-3. **Create feature branch**: `git checkout -b feature-{ISSUE_NUMBER}-{description}`  
-4. **Commit** with clear messages  
-5. **Push** to your fork  
-6. **Create Pull Request** to `develop` branch  
-7. **Address review feedback**; merge once approved
-
-### Pull Request Checklist
-
-- [ ] Associated GitHub issue exists and is referenced  
-- [ ] Base branch is `develop` (not `main`)  
-- [ ] OWL files are valid; pass reasoner validation  
-- [ ] New terms follow ECSO standards  
-- [ ] Clear PR description with rationale  
-- [ ] No merge conflicts
+2. **Merge Module into Primary ECSO Ontology**:
+   ```bash
+   robot merge \
+     --input ecso/ECSO8.owl \
+     --input ecso/modules/temp.owl \
+     --collapse-import-closure false \
+     convert --format rdfxml --output ecso/ECSO8.owl
+   ```
 
 ---
 
-## 7\. TESTING & VALIDATION
+## 5. Automated Testing & Validation Pipeline
 
-### OWL File Validation
+All changes must pass automated syntactic and semantic validations before committing.
 
-**Tools**: Pellet reasoner, Hermit reasoner
+### Validation Steps
 
-**Validation Steps**:
+1. **Profile Validation**:
+   Ensure OWL 2 DL compliance:
+   ```bash
+   robot validate-profile --input ecso/ECSO8.owl --profile DL -o ecso/build/profile_report.txt
+   ```
 
-1. Open `.owl` file in Protégé  
-2. Load ontology  
-3. Run reasoner to check consistency  
-4. Address inferred axioms or inconsistencies  
-5. Export inferred axioms if needed for publication
+2. **Reasoner Consistency Check**:
+   Verify that no classes are unsatisfiable (`owl:Nothing`) and logical axioms are consistent using HermiT or ELK:
+   ```bash
+   robot reason --input ecso/ECSO8.owl --reasoner hermit --dump-inferred-axioms false
+   ```
 
-### Release Pattern
-
-For ontologies with inferred versions (MOSAiC, ARCRC):
-
-- Edit only the `*_raw.owl` file  
-- Run reasoner (Pellet recommended)  
-- Export axioms to generate published version  
-- Example: `MOSAiC_raw.owl` → (Pellet) → `MOSAiC.owl`
-
----
-
-## 8\. ONTOLOGY FILE STRUCTURE & EDITING
-
-### Main File: `ECSO8.owl`
-
-- **Format**: OWL (Web Ontology Language)  
-- **Serialization**: RDF/XML (default) or Turtle (preferred)  
-- **Size**: \~2.3 MB (includes imports)  
-- **Editing Tool**: Protégé recommended
-
-### File Organization
-
-1. **Consistent Formatting**: Follow existing style in `.owl` files  
-2. **Group Related Terms**: Organize class hierarchies by topic  
-3. **Include Comments**: Explain complex relationships or design decisions  
-4. **Namespace Declarations**: Include proper namespace prefixes at file top
+3. **Report Generation (QC Checks)**:
+   Run ROBOT report to detect missing labels, duplicate definitions, or broken annotations:
+   ```bash
+   robot report --input ecso/ECSO8.owl --output ecso/build/robot_report.tsv
+   ```
 
 ---
 
-## 9\. QUALITY ASSURANCE CHECKLIST FOR CURATORS
+## 6. Git Workflow & Branching Strategy
 
-### Before Committing Changes
+All curation activities follow a structured Git feature branch model targeting the **`develop`** branch of `clnsmth/sem-prov-ontologies`.
 
-- [ ] All terms have `rdfs:label` and `IAO:definition`  
-- [ ] All creators have ORCID identifiers  
-- [ ] All dates in ISO 8601 format  
-- [ ] No `owl:sameAs` pointing to string literals (must be URIs)  
-- [ ] Synonyms classified with appropriate SKOS/OBO properties  
-- [ ] No duplicate terms or reused URIs  
-- [ ] Deprecated terms marked with `owl:deprecated true`  
-- [ ] Deprecated terms have `IAO:term_replaced_by` reference  
-- [ ] Hierarchy placement is logically sound  
-- [ ] OWL file is syntactically valid
+### Branching Model
 
-### Before Submitting Pull Request
+| Branch | Purpose | PR / Merge Target |
+| :--- | :--- | :--- |
+| **`develop`** | Active development & feature integration | Base branch for all feature PRs |
+| **`main`** | Stable release versions | Merged from `develop` upon release |
+| **`feature-{ISSUE_NUMBER}-{description}`** | Issue-specific curation branch | Base: `develop` → Target PR: `develop` |
 
-- [ ] Reasoner validation passes (no inconsistencies)  
-- [ ] All new terms follow ECSO naming conventions  
-- [ ] External ontology references use proper URIs  
-- [ ] Feature branch is current with latest `develop`  
-- [ ] Commit messages are clear and reference issue numbers  
-- [ ] PR description explains changes and rationale
+### Step-by-Step Git Process
 
-### Code Review Points
+1. **Sync develop Branch**:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   ```
 
-- [ ] Definition is clear and precise  
-- [ ] Term placement in hierarchy is defensible  
-- [ ] Synonyms are accurate and appropriately scoped  
-- [ ] External references verified  
-- [ ] Documentation is complete
+2. **Create Feature Branch**:
+   ```bash
+   git checkout -b feature-92-soil-microbial-respiration develop
+   ```
+
+3. **Author Template & Apply ROBOT Pipeline**:
+   - Write CSV template in `ecso/modules/`.
+   - Run `robot template` and `robot merge`.
+   - Run `robot reason` to validate consistency.
+
+4. **Commit & Push**:
+   ```bash
+   git add ecso/ECSO8.owl ecso/modules/new_terms_template.csv
+   git commit -m "Add soil microbial respiration terms via ROBOT template #92"
+   git push origin feature-92-soil-microbial-respiration
+   ```
+
+5. **Open Pull Request**:
+   Create PR targeting `develop` on `clnsmth/sem-prov-ontologies` using GitHub CLI:
+   ```bash
+   gh pr create --repo clnsmth/sem-prov-ontologies --base develop --head feature-92-soil-microbial-respiration --title "Add soil microbial respiration terms (#92)" --body "Resolves #92. Created terms via ROBOT template and verified reasoner consistency."
+   ```
+
+---
+
+## 7. Term Hierarchy & Axiomatic Best Practices
+
+### Core Measurement & Characteristic Organization
+ECSO organizes environmental and ecosystem measurements around:
+- **Measurements & Characteristics**: Carbon dynamics, elemental fluxes, biomass, soil respiration.
+- **Physical & Chemical Properties**: Temperature, salinity, dissolved constituents, moisture content.
+- **Ecosystem Entities**: Aquatic systems, terrestrial active layers, atmospheric boundaries.
+
+### Axiom Construction in Templates
+- Class expressions must be enclosed in parentheses: `('property' some 'target')`.
+- Multiple axioms in a single CSV cell are pipe-delimited: `('part of' some 'soil active layer')|('has quality' some 'moist')`.
+- Prefer single, clear parentage over unnecessary polyhierarchy unless multiple superclasses are conceptually required.
+
+---
+
+## 8. Quality Assurance Checklist for Curators & Agents
+
+### Pre-Commit Checklist
+- [ ] Next ID dynamically minted without collisions (8-digit standard `ECSO:XXXXXXXX`).
+- [ ] Primary label is lowercase (unless containing proper nouns).
+- [ ] Textual definition follows `A <parent> which <differentia>`.
+- [ ] Definition reference URL/DOI is provided and validated as live.
+- [ ] Creator ORCID is present in `dc:creator`.
+- [ ] Creation timestamp in `dc:date` is valid ISO 8601.
+- [ ] Issue tracker referenced via `IAO:0000233`.
+- [ ] Synonyms correctly categorized (`hasExactSynonym`, `hasBroadSynonym`, etc.).
+- [ ] No `owl:sameAs` pointing to raw string literals (URIs only).
+
+### Pre-PR Checklist
+- [ ] ROBOT template compiled and cleanly merged into `ecso/ECSO8.owl`.
+- [ ] `robot reason` executed with zero unsatisfiable classes.
+- [ ] Base branch is `develop` on `clnsmth/sem-prov-ontologies`.
+- [ ] Associated GitHub issue referenced in commit and PR description.
+
 
