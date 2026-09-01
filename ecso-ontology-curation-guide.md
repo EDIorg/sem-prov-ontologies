@@ -90,6 +90,18 @@ ECSO strictly follows the **OBO Foundry Aristotelian Genus-Differentia** pattern
 
 ---
 
+### Enriching Existing Terms Lacking Definitions (Conservative Policy)
+
+A substantial proportion of existing terms in ECSO currently lack formal textual definitions (`IAO:0000115`) and authoritative source references (`IAO:0000119` / `oboInOwl:hasDbXref`). Adding these annotations is a primary curation activity.
+
+When enriching existing terms, adhere strictly to this **conservative definition policy**:
+- **Honor Existing Ontological Commitments**: The proposed textual definition must strictly align with and reflect the term's established structural and logical axioms (asserted superclasses, object property restrictions, domain/range constraints, and existing child classes).
+- **Avoid Scope Creep or Over-Constraint**: Clarify the concept without artificially narrowing, expanding, or shifting its semantic boundary relative to its established position in the hierarchy.
+- **Inspect Context Before Defining**: Always run `runoak ancestors <ID>` and `runoak descendants <ID>` to verify that the proposed genus matches the asserted parent and that the differentia holds true for all existing descendant classes.
+- **Preserve Logical Structure**: Do not modify, re-parent, or delete existing axioms when tasked with adding missing definitions or references, unless explicitly requested and approved by maintainers. If an existing term placement appears questionable, document the concern in `rdfs:comment` or raise it on the issue tracker rather than unilaterally altering ontology structure.
+
+---
+
 ## 4. Querying & Semantic Search (OAK / SemSQL)
 
 To search for existing concepts, check for duplicates, and inspect term hierarchies without error-prone raw text grepping, use the **Ontology Access Kit (`runoak`)**:
@@ -337,6 +349,7 @@ ECSO organizes environmental and ecosystem measurements around:
 - [ ] Next ID dynamically minted without collisions (8-digit standard `ECSO:XXXXXXXX`).
 - [ ] Primary label is lowercase (unless containing proper nouns).
 - [ ] Textual definition follows `A <parent> which <differentia>`.
+- [ ] Definition honors existing structural axioms and child subclasses (for existing term enrichment).
 - [ ] Definition reference URL/DOI is provided and validated as live.
 - [ ] Creator ORCID is present in `dc:creator`.
 - [ ] Creation timestamp in `dc:date` is valid ISO 8601.
