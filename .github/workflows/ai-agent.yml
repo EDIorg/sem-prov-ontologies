@@ -260,23 +260,16 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Sync Fork Master with Upstream
+      - name: Sync Fork Develop with Upstream
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
-        run: gh repo sync ${{ github.repository }} -b master
+        run: gh repo sync ${{ github.repository }} -b develop
 
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ steps.generate-token.outputs.token }}
-
-      - name: Set up Agent Environment
-        uses: ./.github/actions/setup-agent-env
-        with:
-          github-token: ${{ steps.generate-token.outputs.token }}
-          compile-db: 'true'
-
 
       - name: Run Gemini CLI
         id: gemini
@@ -307,13 +300,13 @@ jobs:
             MAKING CHANGES:
             If you need to modify files:
             - **Ephemeral Runner Safety**: You run in a single-turn, ephemeral runner. Any changes left on local disk will be destroyed. You MUST commit, push, and create a Pull Request for ANY modifications you make before ending your run.
-            1. Create a new branch for your work based on the clean master branch:
-               `git checkout master`
+            1. Create a new branch for your work based on the clean develop branch:
+               `git checkout develop`
                `git checkout -b ${{ fromJSON(needs.check-mention.outputs.result).branchName }}`
             2. Make your changes and commit with descriptive messages
             3. Push the branch: `git push -u origin ${{ fromJSON(needs.check-mention.outputs.result).branchName }}`
-            4. Create a PR targeting the current fork's master branch:
-               `gh pr create --repo ${{ github.repository }} --base master` with a clear title and description
+            4. Create a PR targeting the current fork's develop branch:
+               `gh pr create --repo ${{ github.repository }} --base develop` with a clear title and description
 
             COMMUNICATING:
             - AUTOMATIC COMMENTING: Your final text response (your summary of actions, answers, or questions) will be automatically posted back to the GitHub issue/PR thread by the workflow. You do NOT need to run `gh issue comment` or `gh pr comment` for your final response.
@@ -342,8 +335,3 @@ jobs:
           
           # Post the comment using GitHub CLI (gh comment works on both issues and PRs)
           gh issue comment "${{ fromJSON(needs.check-mention.outputs.result).itemNumber }}" --body-file agent_response.md
-
-      - name: Restore actions directory for cleanup
-        if: always()
-        run: |
-          git checkout ${{ github.sha }} -- .github/actions/ || true

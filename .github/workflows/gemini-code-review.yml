@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  AGENT_NAME: edi-ontology-agent
+  AGENT_NAME: clnsmth-ontology-agent
   MODEL: gemini-3.7-flash
   TOOLS_DIR: ${{ github.workspace }}/tools
 
@@ -63,7 +63,7 @@ jobs:
               allowedUsers = ["cmungall"];
             }
 
-            const agentName = process.env.AGENT_NAME || "edi-ontology-agent";
+            const agentName = process.env.AGENT_NAME || "clnsmth-ontology-agent";
 
             if (context.eventName === "workflow_dispatch") {
               const inputs = context.payload.inputs;
@@ -180,12 +180,6 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: gh pr checkout "${{ env.PR_NUMBER }}"
 
-      - name: Set up Agent Environment
-        uses: ./.github/actions/setup-agent-env
-        with:
-          github-token: ${{ steps.generate-token.outputs.token }}
-          compile-db: 'true'
-
       - name: Run Gemini Code Review
         id: review
         uses: google-github-actions/run-gemini-cli@v0.1.22
@@ -199,25 +193,26 @@ jobs:
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ env.PR_NUMBER }}
 
-            Review this pull request for the ENVO ontology repository.
+            Review this pull request for the ECSO ontology repository.
 
             Follow the repository instructions in `AGENTS.md`.
 
-            When you need to inspect or query ontology content (such as verifying parent terms, checking for duplicates, or validating class hierarchies), ALWAYS use the OAK CLI (`runoak`) against the compiled local SQLite database:
-            - To look up a term: `runoak -i sqlite:src/envo/envo.db info ENVO:NNNNNNNN`
-            - To search for labels or synonyms: `runoak -i sqlite:src/envo/envo.db search 'marine environment'`
-            - To query term ancestors: `runoak -i sqlite:src/envo/envo.db ancestors ENVO:NNNNNNNN`
+            When you need to inspect or query ontology content (such as verifying parent terms, checking for duplicates, or validating class hierarchies), ALWAYS use the OAK CLI (`runoak`) against `ecso/ECSO8.owl`:
+            - To look up a term: `runoak -i ecso/ECSO8.owl info ECSO:XXXXXXXX`
+            - To search for labels or synonyms: `runoak -i ecso/ECSO8.owl search 'dissolved oxygen'`
+            - To query term ancestors: `runoak -i ecso/ECSO8.owl ancestors ECSO:XXXXXXXX`
 
-            Do not run standard grep or raw text searches over OWL XML files as they are slow and highly inaccurate.
+            Do not run standard grep or raw text searches over OWL RDF/XML files as they are slow and highly inaccurate.
 
             Focus on:
-            - Hierarchy and proposed parents being environmentally and logically consistent
-            - Definitions, xrefs, and PMIDs being real and adequately supportive
-            - Obsolete-term handling and replacement or consider tags being safe
-            - OBO and ODK conventions being preserved
+            - Hierarchy and proposed parents being ecologically, chemically, and logically consistent
+            - Definitions adhering to OBO genus-differentia pattern ("A <genus> which <differentia>.")
+            - For existing terms, definitions adhering to the conservative definition policy (honoring existing structural axioms)
+            - Definitions, xrefs, and reference URLs/DOIs being real, active, and adequately supportive
+            - ROBOT and OBO conventions being preserved
             - Workflow, auth, and repo-configuration regressions when the PR touches `.github` or `.gemini`
 
-            Remember: ENVO term IDs use exactly 8 digits (e.g., `ENVO:01000000`).
+            Remember: ECSO term IDs use exactly 8 digits (e.g., `ECSO:00010137`).
 
             Be constructive and specific. For each issue found, indicate severity:
             - 🔴 CRITICAL: Must fix before merge
@@ -240,9 +235,9 @@ jobs:
 
             Always include a checklist at the top of your review:
             - [ ] Hierarchy and parents are consistent
-            - [ ] Definitions and supporting references look adequate
-            - [ ] Obsolete or replacement handling is safe
-            - [ ] OBO and ODK conventions appear preserved
+            - [ ] Definitions and supporting references look adequate (OBO genus-differentia)
+            - [ ] Conservative definition policy honored for existing terms
+            - [ ] ROBOT template and OBO conventions appear preserved
             - [ ] No obvious CI, auth, or workflow regression
 
             SIGNATURE:
@@ -255,8 +250,3 @@ jobs:
             - Triggered by: @${{ fromJSON(needs.check-mention.outputs.result).user }}
             - Run: [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             ```
-
-      - name: Restore actions directory for cleanup
-        if: always()
-        run: |
-          git checkout ${{ github.sha }} -- .github/actions/ || true
