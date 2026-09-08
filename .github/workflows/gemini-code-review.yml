@@ -180,6 +180,11 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: gh pr checkout "${{ env.PR_NUMBER }}"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Run Gemini Code Review
         id: review
         uses: google-github-actions/run-gemini-cli@v0.1.22
