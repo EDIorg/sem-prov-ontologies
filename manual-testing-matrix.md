@@ -27,12 +27,12 @@ New term request: sap flux density
 @clnsmth-ontology-agent please create a new term for `sap flux density`.
 
 - **Preferred Term Label**: sap flux density
-- **Parent Class**: mass flux rate (ECSO:00000010)
+- **Parent Class**: Flux Measurement Type (ECSO:00000514)
 - **Textual Definition**: A mass flux rate which measures the volume or mass of sap passing through a given cross-sectional area of xylem tissue per unit time.
-- **Definition Reference**: https://en.wikipedia.org/wiki/Sap_flow
+- **Definition Reference**: https://en.wikipedia.org/wiki/Sap
 - **Exact Synonym(s)**: sap flow velocity|sap velocity
-- **Subclass Axiom**: ('has part' some 'water')
-- **Created By**: https://orcid.org/0000-0002-5896-7295
+- **Created By**: https://orcid.org/0000-0003-2261-9931
+
 ```
 
 ### Expected Agent Deliverables
@@ -61,7 +61,7 @@ Add textual definition and reference to ECSO:00001122
 
 - **Target Term**: ECSO:00001122
 - **Definition Source / Reference**: https://en.wikipedia.org/wiki/Oxygen
-- **Curator ORCID**: https://orcid.org/0000-0002-5896-7295
+- **Curator ORCID**: https://orcid.org/0000-0003-2261-9931
 
 Please ensure the definition follows the OBO genus-differentia format and honors existing ontological commitments without modifying superclasses.
 ```
@@ -91,7 +91,7 @@ Add exact synonyms and xrefs to ECSO:00001205
 - **Target Term**: ECSO:00001205
 - **Exact Synonym(s)**: DOC concentration|dissolved organic carbon
 - **Cross Reference**: CHEBI:15377
-- **Curator ORCID**: https://orcid.org/0000-0002-5896-7295
+- **Curator ORCID**: https://orcid.org/0000-0003-2261-9931
 ```
 
 ### Expected Agent Deliverables
@@ -118,7 +118,7 @@ New term request: dissolved oxygen saturation
 - **Parent Class**: oxygen concentration
 - **Textual Definition**: A relative measure of the amount of oxygen dissolved in water.
 - **Reference**: https://en.wikipedia.org/wiki/Oxygen_saturation
-- **Created By**: https://orcid.org/0000-0002-5896-7295
+- **Created By**: https://orcid.org/0000-0003-2261-9931
 ```
 
 ### Expected Agent Deliverables
@@ -158,7 +158,7 @@ https://en.wikipedia.org/wiki/Leaf_nitrogen
 @clnsmth
 
 ### ORCID URL
-https://orcid.org/0000-0002-5896-7295
+https://orcid.org/0000-0003-2261-9931
 
 ### Attribution Consent
 Yes, I consent to attribution under CC-BY.
