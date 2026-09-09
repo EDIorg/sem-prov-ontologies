@@ -156,7 +156,7 @@ ROBOT template CSV files are authored in `ecso/modules/` (e.g., `ecso/modules/ne
 | `related synonym` | `AL oboInOwl:hasRelatedSynonym@en SPLIT=\|` | Loose/related synonyms | `belowground carbon flux` |
 | `cross reference` | `AI oboInOwl:hasDbXref SPLIT=\|` | External vocabulary CURIEs/URIs | `ENVO:01001234\|SWEET:SoilRespiration` |
 | `subclass axiom` | `SC %` | OWL class expressions | `('has part' some 'carbon dioxide')` |
-| `term tracker item` | `A IAO:0000233` | GitHub Issue URL | `https://github.com/clnsmth/sem-prov-ontologies/issues/92` |
+| `term tracker item` | `A IAO:0000233` | GitHub Issue URL | `https://github.com/EDIorg/sem-prov-ontologies/issues/92` |
 | `creation date` | `A dc:date` | ISO 8601 timestamp | `2026-09-01T12:00:00Z` |
 | `created by` | `A dc:creator SPLIT=\|` | Full creator ORCID URL | `https://orcid.org/0000-0002-4366-3088` |
 
@@ -213,17 +213,17 @@ All changes must pass automated syntactic and semantic validations before commit
 
 ## 7. Issue, Git & Pull Request Workflow (Contributor Lifecycle)
 
-All contributor activities follow a structured Git feature branch model targeting the **`develop`** branch of our fork repository (`clnsmth/sem-prov-ontologies`).
+All contributor activities follow a structured Git feature branch model targeting the **`develop`** branch of our fork repository (`EDIorg/sem-prov-ontologies`).
 
 ### Contributor Lifecycle Overview
 
-1. **Staging & Upstream Context**: Contributors propose new terms, missing definitions, synonyms, or structural corrections by submitting Pull Requests to `develop` on `clnsmth/sem-prov-ontologies`. Maintainers review, validate, and merge approved contributions into `develop`, which are then periodically proposed to the upstream parent DataONE ontology.
+1. **Staging & Upstream Context**: Contributors propose new terms, missing definitions, synonyms, or structural corrections by submitting Pull Requests to `develop` on `EDIorg/sem-prov-ontologies`. Maintainers review, validate, and merge approved contributions into `develop`, which are then periodically proposed to the upstream parent DataONE ontology.
 2. **Pull Request Isolation**: Contributors never push directly to shared branches (`develop` or `main`) and do not merge their own pull requests. All modifications are reviewed through PRs.
 
 ### Step-by-Step Contributor Process
 
 1. **Open or Identify an Issue**:
-   - Open or reference an issue on `clnsmth/sem-prov-ontologies` outlining the proposed term or annotation additions.
+   - Open or reference an issue on `EDIorg/sem-prov-ontologies` outlining the proposed term or annotation additions.
    - Record the issue URL to populate the `term tracker item` (`IAO:0000233`) annotation.
 
 2. **Sync and Branch from `develop`**:
@@ -247,10 +247,10 @@ All contributor activities follow a structured Git feature branch model targetin
    ```
 
 5. **Submit Pull Request for Review**:
-   Create a Pull Request targeting `develop` on `clnsmth/sem-prov-ontologies` using GitHub CLI:
+   Create a Pull Request targeting `develop` on `EDIorg/sem-prov-ontologies` using GitHub CLI:
    ```bash
    gh pr create \
-     --repo clnsmth/sem-prov-ontologies \
+     --repo EDIorg/sem-prov-ontologies \
      --base develop \
      --head feature-92-soil-microbial-respiration \
      --title "Add soil microbial respiration terms (#92)" \
@@ -364,7 +364,7 @@ ECSO organizes environmental and ecosystem measurements around:
 ### Pre-PR Checklist
 - [ ] ROBOT template compiled and cleanly merged into `ecso/ECSO8.owl`.
 - [ ] `robot reason` executed with zero unsatisfiable classes.
-- [ ] Base branch is `develop` on `clnsmth/sem-prov-ontologies`.
+- [ ] Base branch is `develop` on `EDIorg/sem-prov-ontologies`.
 - [ ] Associated GitHub issue referenced in commit and PR description.
 
 

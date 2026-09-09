@@ -14,8 +14,8 @@
 name: AI Agent GitHub Mentions
 
 env:
-  AGENT_NAME: clnsmth-ontology-agent
-  MODEL: gemini-3.7-flash
+  AGENT_NAME: edi-ontology-agent
+  MODEL: gemini-3.8-flash
   TOOLS_DIR: ${{ github.workspace }}/tools
   TIMEOUT_MINUTES: 30
 
@@ -86,7 +86,7 @@ jobs:
               allowedUsers = ["cmungall"];
             }
 
-            const agentName = process.env.AGENT_NAME || "clnsmth-ontology-agent";
+            const agentName = process.env.AGENT_NAME || "edi-ontology-agent";
 
             if (context.eventName === "workflow_dispatch") {
               const inputs = context.payload.inputs;
