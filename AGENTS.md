@@ -112,7 +112,7 @@ Always isolate changes in a dedicated feature branch based off `develop`:
   ```
 - Submit Pull Request:
   ```bash
-  gh pr create --repo clnsmth/sem-prov-ontologies --base develop --head feature-XYZ-description --title "Add soil respiration terms (#XYZ)" --body "Resolves #XYZ. Validated reasoner consistency."
+  gh pr create --repo EDIorg/sem-prov-ontologies --base develop --head feature-XYZ-description --title "Add soil respiration terms (#XYZ)" --body "Resolves #XYZ. Validated reasoner consistency."
   ```
 
 ### 2. Standard ROBOT CSV Template Reference
@@ -132,7 +132,7 @@ Row 1 contains column headers; Row 2 contains ROBOT template definitions:
 | `related synonym` | `AL oboInOwl:hasRelatedSynonym@en SPLIT=\|` | Loose/related synonyms | `belowground carbon flux` |
 | `cross reference` | `AI oboInOwl:hasDbXref SPLIT=\|` | External vocabulary CURIEs/URIs | `ENVO:01001234\|SWEET:SoilRespiration` |
 | `subclass axiom` | `SC %` | OWL class expressions | `('has part' some 'carbon dioxide')` |
-| `term tracker item` | `A IAO:0000233` | GitHub Issue URL | `https://github.com/clnsmth/sem-prov-ontologies/issues/92` |
+| `term tracker item` | `A IAO:0000233` | GitHub Issue URL | `https://github.com/EDIorg/sem-prov-ontologies/issues/92` |
 | `creation date` | `A dc:date` | ISO 8601 timestamp | `2026-09-01T12:00:00Z` |
 | `created by` | `A dc:creator SPLIT=\|` | Full creator ORCID URL | `https://orcid.org/0000-0002-4366-3088` |
 
@@ -148,13 +148,13 @@ All commit messages authored by agents must follow these conventions:
    - Explain **what** and **why** of the changes.
    - **Wrapped strictly at 72 characters per line**.
    - Use concise bullet points for specific term/axiom modifications.
-3. **Attribution**: Sign commits as `@clnsmth-ontology-agent`.
+3. **Attribution**: Sign commits as `@edi-ontology-agent`.
 
 
 ## 7. GitHub Contribution & PR Rules
-- **Strict Git & PR Rule (Ephemeral Runner)**: Since you run in a single-turn, ephemeral GitHub Actions runner, any local file modifications left on disk will be lost when the run ends. If you make ANY modifications to repository files, you MUST commit, push your branch, and open a Pull Request targeting `develop` on `clnsmth/sem-prov-ontologies` before terminating execution.
-- **Repository Targeting**: Pull Requests must target **`clnsmth/sem-prov-ontologies`** base branch **`develop`** (never push directly to `develop` or `main`).
-- **Signature**: Always sign GitHub comments and reviews as `@clnsmth-ontology-agent`.
+- **Strict Git & PR Rule (Ephemeral Runner)**: Since you run in a single-turn, ephemeral GitHub Actions runner, any local file modifications left on disk will be lost when the run ends. If you make ANY modifications to repository files, you MUST commit, push your branch, and open a Pull Request targeting `develop` on `EDIorg/sem-prov-ontologies` before terminating execution.
+- **Repository Targeting**: Pull Requests must target **`EDIorg/sem-prov-ontologies`** base branch **`develop`** (never push directly to `develop` or `main`).
+- **Signature**: Always sign GitHub comments and reviews as `@edi-ontology-agent`.
 
 
 ## 8. Workflow: EDI to ECSO Term Request Mapping

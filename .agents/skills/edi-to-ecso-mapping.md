@@ -3,8 +3,8 @@
 This skill defines the workflow and mapping rules for converting a "New term request received by the EDI annotation studio" into a standard "ECSO new term request" format.
 
 ## Triggering Condition
-This workflow is triggered when a human curator mentions `@clnsmth-ontology-agent` on a GitHub issue containing an EDI-formatted term request, asking using any natural variation of:
-`@clnsmth-ontology-agent please map this to ECSO new term request` or `@clnsmth-ontology-agent please map this`.
+This workflow is triggered when a human curator mentions `@edi-ontology-agent` on a GitHub issue containing an EDI-formatted term request, asking using any natural variation of:
+`@edi-ontology-agent please map this to ECSO new term request` or `@edi-ontology-agent please map this`.
 
 The agent should recognize semantic variations such as:
 - "map this"
